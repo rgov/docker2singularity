@@ -253,6 +253,12 @@ fi
 ENTRYPOINT=`echo "${ENTRYPOINT//\"/}" | sed 's/\[//g' | sed 's/\]//g' | sed 's/,/ /g'`
 
 echo '#!/bin/sh' > $build_sandbox/.singularity.d/runscript
+
+WORKINGDIR=$(docker inspect --format='{{json .Config.WorkingDir}}' $image)
+if [[ $WORKINGDIR != '""' ]]; then
+         echo cd $WORKINGDIR >> $build_sandbox/.singularity.d/runscript;
+fi
+
 if [[ $ENTRYPOINT != "null" ]]; then
     echo $ENTRYPOINT '$@' >> $build_sandbox/.singularity.d/runscript;
 else
